@@ -79,6 +79,7 @@ fn parse_type_pre_stepped<'a>(
 ) -> syn::Result<Type> {
     match lowercase_ident {
         "utf8string" => Ok(Type::UTF8String),
+        "ia5string" => Ok(Type::IA5String),
         "octet_string" => Ok(Type::OctetString),
         "integer" => {
             let range = MaybeRanged::parse(input)?;

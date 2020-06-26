@@ -461,6 +461,7 @@ impl Model<Rust> {
             AsnType::Boolean
             | AsnType::Integer(_)
             | AsnType::UTF8String
+            | AsnType::IA5String
             | AsnType::OctetString
             | AsnType::TypeReference(_) => {
                 let rust_type = Self::definition_type_to_rust_type(name, asn, defs);
@@ -559,6 +560,7 @@ impl Model<Rust> {
             }
             AsnType::Integer(None) => RustType::U64(None),
             AsnType::UTF8String => RustType::String,
+            AsnType::IA5String => RustType::String,
             AsnType::OctetString => RustType::VecU8,
             Type::Optional(inner) => RustType::Option(Box::new(
                 Self::definition_type_to_rust_type(name, inner, defs),
@@ -882,6 +884,7 @@ mod tests {
             "SimpleChoiceTest".into(),
             AsnType::Choice(Choice::from(vec![
                 ChoiceVariant::name_type("bernd-das-brot", AsnType::UTF8String),
+                ChoiceVariant::name_type("ascii-choice", AsnType::IA5String),
                 ChoiceVariant::name_type("nochSoEinBrot", AsnType::OctetString),
             ]))
             .untagged(),
@@ -896,6 +899,7 @@ mod tests {
                 Rust::DataEnum(
                     vec![
                         DataVariant::from_name_type("BerndDasBrot", RustType::String),
+                        DataVariant::from_name_type("AsciiChoice", RustType::String),
                         DataVariant::from_name_type("NochSoEinBrot", RustType::VecU8),
                     ]
                     .into()

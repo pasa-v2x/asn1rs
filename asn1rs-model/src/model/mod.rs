@@ -384,6 +384,8 @@ impl Model<Asn> {
             Ok(Type::Boolean)
         } else if text.eq_ignore_ascii_case("UTF8String") {
             Ok(Type::UTF8String)
+        } else if text.eq_ignore_ascii_case("IA5String") {
+            Ok(Type::IA5String)
         } else if text.eq_ignore_ascii_case("OCTET") {
             let token = Self::next(iter)?;
             if token.text().map_or(false, |t| t.eq("STRING")) {
@@ -688,6 +690,7 @@ pub enum Type {
     Boolean,
     Integer(Option<Range<i64>>),
     UTF8String,
+    IA5String,
     OctetString,
 
     Optional(Box<Type>),
@@ -1348,7 +1351,8 @@ pub(crate) mod tests {
             SimpleSchema DEFINITIONS AUTOMATIC TAGS ::=
             BEGIN
     
-            SimpleStringType ::= UTF8String
+            SimpleUnicodeStringType ::= UTF8String
+            SimpleAsciiStringType ::= IA5String
             
             END
         ",
@@ -1358,11 +1362,18 @@ pub(crate) mod tests {
         assert_eq!("SimpleSchema", &model.name);
         assert_eq!(
             &[Definition(
-                "SimpleStringType".to_string(),
+                "SimpleUnicodeStringType".to_string(),
                 Type::UTF8String.untagged()
             )][..],
             &model.definitions[..]
-        )
+        );
+        assert_eq!(
+            &[Definition(
+                "SimpleAsciiStringType".to_string(),
+                Type::IA5String.untagged()
+            )][..],
+            &model.definitions[..]
+        );
     }
 
     #[test]
